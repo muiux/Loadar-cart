@@ -1,0 +1,86 @@
+<div
+  class="flex flex-col gap-8"
+  data-controller="discount"
+  data-discount-initial-value="0"
+  data-discount-total-price-value="<%= @cart.total_price%>"
+>
+  <div class="bg-white rounded flex flex-col">
+    <% @cart.cart_items.each do |item| %>
+      <div class="flex items-center justify-between relative">
+        <div class="flex items-center gap-4">
+          <%= image_tag item.product.image, alt: item.product.name, class: 'w-[100px] h-[100px]' %>
+          <span class="text-sm">
+            <%= item.product.name %>
+          </span>
+        </div>
+        <span>
+          <%= render('shared/quantity_input', quantity: item.quantity, cart_id: @cart.id, product_id: item.product.id) %>
+        </span>
+        <span class="font-semibold">
+          <%= number_to_currency(item.product.price) %>
+        </span>
+        <%= form_with url: destroy_cart_item_path(id: @cart.id, product_id: item.product.id, redirect_to: cart_path(id: @cart.id)), method: :delete, class: "absolute top-0 right-0" do %>
+          <button type="submit" class="cursor-pointer">
+            <%= image_tag "trash-bin.svg", alt: 'Del', class: "w-5 h-5" %>
+          </button>
+        <% end %>
+      </div>
+      <div class="w-full border-b border-gray-200 my-3"></div>
+    <% end %>
+  </div>
+
+  <div class="border border-gray-200 rounded p-4 flex flex-col gap-3">
+    <div class="w-full flex flex-col">
+      <div class="w-full flex justify-between items-center">
+        <span class="text-gray-600 text-xs"><%= @cart.total_quantity %> items</span>
+        <span class="font-semibold"><%= number_to_currency(@cart.total_price) %></span>
+      </div>
+      <div class="w-full flex justify-between items-center">
+        <span class="text-gray-600 text-xs">Move the slider to specify the discount amount</span>
+        <span class="text-green-600 font-semibold" data-discount-target="display">$0.00</span>
+      </div>
+    </div>
+
+    <div class="w-full h-9">
+      <input
+        type="range"
+        name="discount"
+        min="0"
+        max="<%= [@cart.total_price, 100].min %>"
+        value="0"
+        data-discount-target="range"
+        data-action="input->discount#update"
+        class="
+          w-full bg-transparent cursor-pointer appearance-none disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden
+          [&::-webkit-slider-thumb]:w-9
+          [&::-webkit-slider-thumb]:h-9
+          [&::-webkit-slider-thumb]:-mt-4
+          [&::-webkit-slider-thumb]:appearance-none
+          [&::-webkit-slider-thumb]:bg-green-600
+          [&::-webkit-slider-thumb]:rounded-full
+
+          [&::-webkit-slider-runnable-track]:w-full
+          [&::-webkit-slider-runnable-track]:h-1
+          [&::-webkit-slider-runnable-track]:bg-green-600
+          [&::-webkit-slider-runnable-track]:rounded-full
+        "
+      >
+    </div>
+
+    <div class="w-full border-b border-gray-200"></div>
+
+    <div class="flex justify-between items-center">
+      <span class="font-semibold">
+        Total
+      </span>
+      <span class="font-bold text-xl" data-discount-target="total">
+        <%= number_to_currency(@cart.total_price) %>
+      </span>
+    </div>
+  </div>
+
+  <%= form_with url: checkout_cart_path(@cart), method: :post do |form| %>
+    <%= form.hidden_field :discount, value: 0, data: { discount_target: "hiddenInput" } %>
+    <%= form.submit "Place order", class: "w-full p-2 bg-green-600 rounded text-white cursor-pointer" %>
+  <% end %>
+</div>

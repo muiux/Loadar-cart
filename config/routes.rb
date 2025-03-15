@@ -1,4 +1,17 @@
 Rails.application.routes.draw do
+  get "products/show" => "products#show", :as => "product"
+
+  post "cart_items/create" => "cart_items#create", :as => "create_cart_item"
+  post "cart_items/remove" => "cart_items#remove", :as => "remove_cart_item"
+  delete "cart_items/destroy" => "cart_items#destroy", :as => "destroy_cart_item"
+
+  resources :carts do
+    member do
+      get "show"
+      post "checkout"
+      delete "reset"
+    end
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -10,5 +23,5 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  # root "posts#index"
+  root to: redirect("/products/show")
 end

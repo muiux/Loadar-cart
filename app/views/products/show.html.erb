@@ -1,0 +1,19 @@
+<div class="flex justify-between items-center">
+  <h1 class="text-3xl">Products</h1>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+  <% @products.each do |product| %>
+    <div class="border border-gray-200 p-4">
+      <%= image_tag product.image, class: "w-full" %>
+      <h2 class="text-xl font-bold mt-4"><%= product.name %></h2>
+      <p class="text-gray-600"><%= number_to_currency(product.price) %></p>
+
+      <% if @cart.products.exists?(id: product.id) %>
+        <%= button_to "Already in Cart", destroy_cart_item_path(id: @cart.id, product_id: product.id, redirect_to: product_path), method: :delete, class: "cursor-pointer mt-4 bg-gray-400 text-white px-4 py-2 rounded" %>
+      <% else %>
+        <%= button_to "Add to Cart", create_cart_item_path(id: @cart.id, product_id: product.id, redirect_to: product_path), method: :post, class: "cursor-pointer mt-4 bg-green-600 text-white px-4 py-2 rounded" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

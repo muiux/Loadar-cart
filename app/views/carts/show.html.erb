@@ -1,0 +1,12 @@
+<div class="flex justify-between items-center">
+  <h1 class="text-3xl">Cart</h1>
+  <% unless @cart.cart_items.empty? %>
+    <%= button_to "Reset", reset_cart_path(@cart), method: :delete, data: { confirm: "Are you sure you want to reset the cart?" }, class: "text-gray-400 cursor-pointer" %>
+  <% end %>
+</div>
+
+<% unless @cart.cart_items.empty? %>
+  <%= render @cart %>
+<% else %>
+  <%= render "carts/empty_cart" %>
+<% end %>
